@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { SearchBarForm, SearchBarHeader, SearchBarButton, SerchBarButtonLabel, SerchBarInput } from './searchBarStyle'
-import { toast } from 'react-toastify';
+
 
 export default class SearchBar extends Component {
 	state = {
@@ -22,7 +22,7 @@ export default class SearchBar extends Component {
 			return;
 		}
 		this.props.handleFormSubmit(this.state.search);
-		this.setState({ search: '' });
+		this.setState({ search: null });
 	}
 
 

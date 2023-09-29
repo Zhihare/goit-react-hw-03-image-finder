@@ -1,36 +1,50 @@
 import React, { Component } from 'react'
 import { ImageGalleryUl } from './imageGalleryStyle'
-import axios from "axios";
 import { ImageGalleryItem } from 'components/ImageGalleryItem/imageGalleryItem';
+import { fetchPhoto } from 'service/api';
+import Button from 'components/Button/button';
 
 export default class ImageGallery extends Component {
 	state = {
 		search: null,
+		isLoading: false,
+		error: null,
+		page: 1,
 	}
 
-	async componentDidUpdate(prevProps, prevState) {
+	loadMore = async () => {
+		let nextPage = this.state.page + 1;
+		const photo = await fetchPhoto(this.props.searchInfo, nextPage);
+		this.setState(prevState => {
+			return {
+				search: [...prevState.search, ...photo],
+				page: nextPage,
+			};
+		});
+	}
+
+	fetchSearchPhoto = async () => {
+		try {
+			this.setState({ isLoading: true });
+			const photo = await fetchPhoto(this.props.searchInfo, 1);
+			this.setState({
+				search: photo,
+				page: 1,
+			});
+		} catch (error) {
+			this.setState({ error: error.message });
+		} finally {
+			this.setState({ isLoading: false });
+
+		}
+	}
+
+
+	componentDidUpdate(prevProps, prevState) {
 		const prevSearch = prevProps.searchInfo;
 		const nextSearch = this.props.searchInfo;
-		const page = 1;
-
 		if (prevSearch !== nextSearch) {
-			const url = "https://pixabay.com/api/";
-			const apiKey = "38868340-f331cc79d6b60576f7cfbf452";
-
-
-			const params = new URLSearchParams({
-				page,
-				per_page: 12,
-				q: nextSearch,
-				image_type: 'photo',
-				orientation: 'horizontal',
-				safesearch: true,
-			});
-			const { data } = await axios.get(`${url}?key=${apiKey}`, { params })
-			const { hits } = data;
-			console.dir(hits);
-			return this.setState({ search: hits });
-
+			this.fetchSearchPhoto();
 		}
 	}
 
@@ -38,18 +52,31 @@ export default class ImageGallery extends Component {
 	render() {
 		const showPost = Array.isArray(this.state.search) && this.state.search.length;
 		return (
-			<ImageGalleryUl>
-				{!this.props.searchInfo && <div>Заповніть поле пошук!</div>}
-				{showPost && this.state.search.map(photo => {
-					return (
-						<ImageGalleryItem key={photo.id}
-							webformatURL={photo.webformatURL}
-							largeImageURL={photo.largeImageURL}
-						/>
-					);
-				})
-				}
-			</ImageGalleryUl>
+			<div>
+				<ImageGalleryUl>
+					{this.state.isLoading && (
+						<div>
+							<p>Loading...</p>
+						</div>
+					)}
+
+					{this.state.error && <p>{this.state.error}</p>}
+
+					{!this.props.searchInfo && <div>Заповніть поле пошук!</div>}
+					{showPost && this.state.search.map(photo => {
+						return (
+							<ImageGalleryItem key={photo.id}
+								webformatURL={photo.webformatURL}
+								largeImageURL={photo.largeImageURL}
+							/>
+						);
+					})
+					}
+				</ImageGalleryUl>
+				{showPost && (
+					<Button onloadMore={this.loadMore} />
+				)}
+			</div>
 		)
 	}
 }
