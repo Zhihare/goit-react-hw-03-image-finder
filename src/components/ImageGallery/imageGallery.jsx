@@ -57,14 +57,6 @@ export default class ImageGallery extends Component {
 		}
 	}
 
-	onOpenBigPhoto = (event) => {
-		if (event.currentTarget === event.target) {
-			this.props.onOpenModal(event);
-			console.log(event.currentTarget);
-			console.log(currentTarget);
-		}
-	}
-
 
 	render() {
 		const showPost = Array.isArray(this.state.search) && this.state.search.length;
