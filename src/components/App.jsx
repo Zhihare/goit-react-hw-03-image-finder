@@ -5,8 +5,8 @@ import Modal from "./Modal/modal";
 import { Loader } from 'components/Loader/loader';
 import Button from "./Button/button";
 import { fetchPhoto } from "service/api";
-import { ImageGalleryUl } from "./ImageGallery/imageGalleryStyle";
 import ImageGalleryItem from "./ImageGalleryItem/imageGalleryItem";
+import { ImageGallery } from "./ImageGallery/imageGallery";
 
 
 export default class App extends Component {
@@ -100,7 +100,7 @@ export default class App extends Component {
       <AppContainer>
         <SearchBar handleFormSubmit={this.handleFormSubmit}></SearchBar>
 
-        <ImageGalleryUl>
+        <ImageGallery>
           {this.state.error && <p>{this.state.error}</p>}
           {showPost && this.state.search.map(photo => {
             return (
@@ -112,7 +112,7 @@ export default class App extends Component {
             );
           })
           }
-        </ImageGalleryUl>
+        </ImageGallery>
         {this.state.isLoading && (
           <Loader />)}
         {showPost && this.state.page <= maxPage &&
