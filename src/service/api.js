@@ -13,6 +13,5 @@ export const fetchPhoto = async (searchPhoto, page) => {
 		safesearch: true,
 	});
 	const { data } = await axios.get(`${url}?key=${apiKey}`, { params })
-	const { hits } = data;
 	return (data);
 }
