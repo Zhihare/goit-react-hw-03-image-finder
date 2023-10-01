@@ -18,7 +18,7 @@ export default class SearchBar extends Component {
 	handleSubmit = event => {
 		event.preventDefault();
 
-		if (this.state.search.trim() === '') {
+		if (this.state.search === null) {
 			alert('Заповніть поле пошуку!');
 			return;
 		}
