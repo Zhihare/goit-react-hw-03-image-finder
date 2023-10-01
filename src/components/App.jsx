@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import SearchBar from "./SearchBar/searchBar";
-import { ImageGallery } from "./ImageGallery/imageGallery";
 import { AppContainer } from "./AppStyle";
 import Modal from "./Modal/modal";
 import { Loader } from 'components/Loader/loader';
 import Button from "./Button/button";
 import { fetchPhoto } from "service/api";
-
+import { ImageGalleryUl } from "./ImageGallery/imageGalleryStyle";
+import ImageGalleryItem from "./ImageGalleryItem/imageGalleryItem";
 
 
 export default class App extends Component {
@@ -20,6 +20,7 @@ export default class App extends Component {
     isLoading: false,
     error: null,
     page: 1,
+    total: null,
   }
 
   handleFormSubmit = Search => {
@@ -29,10 +30,11 @@ export default class App extends Component {
   fetchSearchPhoto = async () => {
     try {
       this.setState({ isLoading: true });
-      const photo = await fetchPhoto(this.state.searchText, 1);
+      const { hits, total } = await fetchPhoto(this.state.searchText, 1);
       this.setState({
-        search: photo,
+        search: hits,
         page: 1,
+        total: total,
       });
     } catch (error) {
       this.setState({ error: error.message });
@@ -45,10 +47,10 @@ export default class App extends Component {
   loadMore = async () => {
     try {
       let nextPage = this.state.page + 1;
-      const photo = await fetchPhoto(this.state.searchText, nextPage);
+      const { hits } = await fetchPhoto(this.state.searchText, nextPage);
       this.setState(prevState => {
         return {
-          search: [...prevState.search, ...photo],
+          search: [...prevState.search, ...hits],
           page: nextPage,
           isLoading: true,
         }
@@ -63,7 +65,7 @@ export default class App extends Component {
 
 
   componentDidUpdate(_, prevState) {
-    if (prevState.searchText !== this.state.sea) {
+    if (prevState.searchText !== this.state.searchText) {
       this.fetchSearchPhoto();
     }
   }
@@ -93,16 +95,13 @@ export default class App extends Component {
 
   render() {
     const showPost = Array.isArray(this.state.search) && this.state.search.length;
-
+    let maxPage = this.state.total / 12;
     return (
       <AppContainer>
         <SearchBar handleFormSubmit={this.handleFormSubmit}></SearchBar>
 
-        <ImageGallery onOpenModal={this.onOpenModal}
-          error={this.state.error}
-          showPost={showPost}
-          Photos={this.state.search}>
-          {/* {this.state.error && <p>{this.state.error}</p>}
+        <ImageGalleryUl>
+          {this.state.error && <p>{this.state.error}</p>}
           {showPost && this.state.search.map(photo => {
             return (
               <ImageGalleryItem onOpenModal={this.onOpenModal}
@@ -112,13 +111,13 @@ export default class App extends Component {
               />
             );
           })
-          } */}
-        </ImageGallery>
+          }
+        </ImageGalleryUl>
         {this.state.isLoading && (
           <Loader />)}
-        {showPost && (
+        {showPost && this.state.page <= maxPage &&
           <Button onloadMore={this.loadMore} />
-        )}
+        }
 
         {this.state.modal.isOpen && <Modal
           largeImageURL={this.state.modal.data}

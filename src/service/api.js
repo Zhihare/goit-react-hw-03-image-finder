@@ -14,5 +14,5 @@ export const fetchPhoto = async (searchPhoto, page) => {
 	});
 	const { data } = await axios.get(`${url}?key=${apiKey}`, { params })
 	const { hits } = data;
-	return (hits);
+	return (data);
 }
