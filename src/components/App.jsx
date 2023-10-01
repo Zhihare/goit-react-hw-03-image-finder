@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import SearchBar from "./SearchBar/searchBar";
 import { ImageGallery } from "./ImageGallery/imageGallery";
-import ImageGalleryItem from "./ImageGalleryItem/imageGalleryItem";
 import { AppContainer } from "./AppStyle";
 import Modal from "./Modal/modal";
 import { Loader } from 'components/Loader/loader';
@@ -63,9 +62,10 @@ export default class App extends Component {
 
 
 
-  componentDidUpdate(prevProps, prevState) {
-
-    this.fetchSearchPhoto();
+  componentDidUpdate(_, prevState) {
+    if (prevState.searchText !== this.state.sea) {
+      this.fetchSearchPhoto();
+    }
   }
 
 
@@ -98,8 +98,11 @@ export default class App extends Component {
       <AppContainer>
         <SearchBar handleFormSubmit={this.handleFormSubmit}></SearchBar>
 
-        <ImageGallery>
-          {this.state.error && <p>{this.state.error}</p>}
+        <ImageGallery onOpenModal={this.onOpenModal}
+          error={this.state.error}
+          showPost={showPost}
+          Photos={this.state.search}>
+          {/* {this.state.error && <p>{this.state.error}</p>}
           {showPost && this.state.search.map(photo => {
             return (
               <ImageGalleryItem onOpenModal={this.onOpenModal}
@@ -109,7 +112,7 @@ export default class App extends Component {
               />
             );
           })
-          }
+          } */}
         </ImageGallery>
         {this.state.isLoading && (
           <Loader />)}
