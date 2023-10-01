@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { TfiSearch } from 'react-icons/tfi';
-import { SearchBarForm, SearchBarHeader, SearchBarButton, SerchBarButtonLabel, SerchBarInput } from './searchBarStyle'
+import { SearchBarForm, SearchBarHeader, SearchBarButton, SerchBarInput } from './searchBarStyle'
 
 
 export default class SearchBar extends Component {
