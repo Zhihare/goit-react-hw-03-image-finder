@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { ImageGalleryUl } from './imageGalleryStyle'
-import { ImageGalleryItem } from 'components/ImageGalleryItem/imageGalleryItem';
+import ImageGalleryItem from 'components/ImageGalleryItem/imageGalleryItem';
 import { fetchPhoto } from 'service/api';
 import Button from 'components/Button/button';
+import { Loader } from 'components/Loader/loader';
 
 export default class ImageGallery extends Component {
 	state = {
@@ -13,15 +14,23 @@ export default class ImageGallery extends Component {
 	}
 
 	loadMore = async () => {
-		let nextPage = this.state.page + 1;
-		const photo = await fetchPhoto(this.props.searchInfo, nextPage);
-		this.setState(prevState => {
-			return {
-				search: [...prevState.search, ...photo],
-				page: nextPage,
-			};
-		});
+		try {
+			let nextPage = this.state.page + 1;
+			const photo = await fetchPhoto(this.props.searchInfo, nextPage);
+			this.setState(prevState => {
+				return {
+					search: [...prevState.search, ...photo],
+					page: nextPage,
+					isLoading: true,
+				}
+			})
+		} catch (error) {
+			this.setState({ error: error.message });
+		} finally {
+			this.setState({ isLoading: false });
+		}
 	}
+
 
 	fetchSearchPhoto = async () => {
 		try {
@@ -48,24 +57,29 @@ export default class ImageGallery extends Component {
 		}
 	}
 
+	onOpenBigPhoto = (event) => {
+		if (event.currentTarget === event.target) {
+			this.props.onOpenModal(event);
+			console.log(event.currentTarget);
+			console.log(currentTarget);
+		}
+	}
+
 
 	render() {
 		const showPost = Array.isArray(this.state.search) && this.state.search.length;
 		return (
 			<div>
-				<ImageGalleryUl>
-					{this.state.isLoading && (
-						<div>
-							<p>Loading...</p>
-						</div>
-					)}
+				<ImageGalleryUl >
+
 
 					{this.state.error && <p>{this.state.error}</p>}
 
-					{!this.props.searchInfo && <div>Заповніть поле пошук!</div>}
+					{/* {!this.props.searchInfo && <div>Заповніть поле пошук!</div>} */}
 					{showPost && this.state.search.map(photo => {
 						return (
-							<ImageGalleryItem key={photo.id}
+							<ImageGalleryItem onOpenModal={this.props.onOpenModal}
+								key={photo.id}
 								webformatURL={photo.webformatURL}
 								largeImageURL={photo.largeImageURL}
 							/>
@@ -73,9 +87,14 @@ export default class ImageGallery extends Component {
 					})
 					}
 				</ImageGalleryUl>
+				{this.state.isLoading && (
+					<Loader />
+
+				)}
 				{showPost && (
 					<Button onloadMore={this.loadMore} />
 				)}
+
 			</div>
 		)
 	}

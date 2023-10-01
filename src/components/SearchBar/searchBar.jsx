@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { TfiSearch } from 'react-icons/tfi';
 import { SearchBarForm, SearchBarHeader, SearchBarButton, SerchBarButtonLabel, SerchBarInput } from './searchBarStyle'
 
 
@@ -31,7 +32,10 @@ export default class SearchBar extends Component {
 			<SearchBarHeader onSubmit={this.handleSubmit}>
 				<SearchBarForm>
 					<SearchBarButton type="submit">
-						<SerchBarButtonLabel>Search</SerchBarButtonLabel>
+						<TfiSearch style={{
+							height: '35px',
+							width: '30px',
+						}} />
 					</SearchBarButton>
 
 					<SerchBarInput
