@@ -64,11 +64,8 @@ export default class App extends Component {
 
 
   componentDidUpdate(prevProps, prevState) {
-    const prevSearch = prevProps.searchText;
-    const nextSearch = this.state.searchText;
-    if (prevSearch !== nextSearch) {
-      this.fetchSearchPhoto();
-    }
+
+    this.fetchSearchPhoto();
   }
 
 
